@@ -1,0 +1,25 @@
+<launch>
+    <param name="use_sim_time" value="false"/>
+    <!-- Load Lidar Params -->
+    <rosparam command="load" file="$(find tc2li_slam)/config/kitti.yaml"/>
+    <param name="feature_extract_enable" type="bool" value="0"/>
+    <param name="point_filter_num" type="int" value="2"/>
+    <param name="max_iteration" type="int" value="3"/>
+    <param name="filter_size_surf" type="double" value="0.5"/>
+    <param name="filter_size_map" type="double" value="0.5"/>
+    <param name="cube_side_length" type="double" value="1000"/>
+    <param name="runtime_pos_log_enable" type="bool" value="1"/>
+
+    <!-- Main node -->
+    <node name="tc2l_slam" pkg="tc2li_slam" type="ros_stereo_lidar" output="screen">
+        <!-- change the topics according to the dataset -->
+        <remap from="/camera/left/image_raw" to="/kitti/camera_gray_left/image_rect"/>
+        <remap from="/camera/right/image_raw" to="/kitti/camera_gray_right/image_rect"/>
+        <remap from="/velodyne_points" to="/kitti/velo/pointcloud"/>
+        <!-- Parameters for original ORB-SLAM3 -->
+        <param name="voc_file" type="string" value="$(find tc2li_slam)/slam_framework/Vocabulary/ORBvoc.txt"/>
+        <param name="settings_file" type="string" value="$(find tc2li_slam)/config/Camera-Lidar/KITTI03.yaml"/>
+    </node>
+    <!-- Visualization -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find tc2li_slam)/include/tc2l_slam.rviz" output="screen"/>
+</launch>
